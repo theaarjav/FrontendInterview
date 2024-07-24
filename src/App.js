@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { useState } from 'react';
+import List from './List';
 /*
   Create a list of candidates, showing their name, vote count, and buttons to add/subtract votes
   Create a small form which has an input box for candidate names and a SUBMIT button to add candidate names. 
@@ -10,43 +11,43 @@ import { useState } from 'react';
 function App() {
   const [list, setList] = useState([])
   const [newName, setNewName] = useState("")
-  const handleVoteCount=(ind, fun)=>{
+  const handleVoteCount = (ind, fun) => {
+    const ch = list[ind]["votes"] + 1;
+    if (fun == '-') 
+      setList(list.map((person, i) => i == ind ? { ...person, votes: ch-2 } : person));
+    else 
+    setList(list.map((person, i) => i == ind ? { ...person, votes: ch } : person));
     var newList=list;
-    console.log(newList[ind]);
-   if(fun=='-') newList[ind].votes--;
-   else newList[ind].votes++;
-   setList(newList)
+    // newList.sort((a, b)=>a.votes-b.votes);
+    // console.log(newList);
+    // newList.reverse();
+    // console.log(newList);
+    // setList(newList)
+    setList(list=>list.sort((a, b)=> a.votes-b.votes).reverse())
   }
 
-  const handleChange=(e)=>{
+  const handleChange = (e) => {
     setNewName(e.target.value)
   }
 
 
 
-  const handleSubmit=()=>{
-    setList([...list, {name: newName, votes:0}]);
+  const handleSubmit = () => {
+    setList([...list, { name: newName, votes: 0 }]);
     setNewName("");
   }
 
   return (
     <div >
       {
-        list.map(({name, votes, }, i)=>{
-          return <div className='flex justify-between items-center'>
-            <button onClick={()=>handleVoteCount(i, '-')}>-</button>
-            <span>
-              {name}
-            </span>
-            <span>{votes}</span>
-            <button onClick={()=>handleVoteCount(i, '+')}>+</button>
-          </div>
+        list.map(({ name, votes }, i) => {
+          return <List key={i}  name={name} votes={votes} handleVoteCount={handleVoteCount} i={i} />
         })
       }
 
       <div>
         Add Name:
-        <input placeholder='Add name to election' value={newName} type='text' onChange={handleChange}/>
+        <input placeholder='Add name to election' value={newName} type='text' onChange={handleChange} />
         <button onClick={handleSubmit}>Add {newName}</button>
       </div>
     </div>
